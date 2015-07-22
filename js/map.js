@@ -94,6 +94,7 @@ var Map = ( function() {"use strict";
 		 * *********************************************************************/
 
 		var $ = window.jQuery;
+		var layer;
 
 		/**
 		 * Constructor
@@ -112,6 +113,7 @@ var Map = ( function() {"use strict";
 			this.TRACK = 'track';
 			this.ACCESSIBILITY = 'accessiblity';
 			this.HEIGHTS = 'Height Profile';
+			this.UNIVERSITY = 'university';
 
 			var self = this;
 			/* *********************************************************************
@@ -160,6 +162,7 @@ var Map = ( function() {"use strict";
 				var mapSurfer_new = new OpenLayers.Layer.XYZ("OpenMapSurfer", namespaces.layerMapSurfer, mapSurfer_options);
 				this.theMap.addLayer(mapSurfer_new);
 			}
+			
 
 
 			//layer 2 - mapnik
@@ -181,7 +184,10 @@ var Map = ( function() {"use strict";
 				});
 				this.theMap.addLayer(layerOSM);
 			}
+			
 
+
+	          
 
 			//layer 4 - cycle map
 			var layerCycle = new OpenLayers.Layer.OSM("OpenCycleMap", ["http://a.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png", "http://b.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png", "http://c.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png"]);
@@ -207,6 +213,8 @@ var Map = ( function() {"use strict";
 			}
 
 			layMSNAsterHillshade.setOpacity(0.6);
+			
+			
 
 			//TODO too many requests sent
 			//overlay - traffic
@@ -348,7 +356,11 @@ var Map = ( function() {"use strict";
 			var layerHeights = new OpenLayers.Layer.Vector(this.HEIGHTS, {
 				displayInLayerSwitcher : false
 			});
+			
+			
 
+	          
+	          
 			//define order
 			this.theMap.addLayers([layerHeights, layerAccessibility, layerRouteLines, layerTrack, layerGeolocation, layerSearch, layerPoi, layerRoutePoints, layerAvoid]);
 
@@ -429,7 +441,37 @@ var Map = ( function() {"use strict";
 							self.emit('map:addWaypoint', {
 								pos : displayPos,
 								type : Waypoint.type.START
+								
 							});
+							
+							var data_url = "http://overpass-api.de/api/interpreter?data=[out:xml];node[name=%22Gielgen%22][place=suburb];out skel;";
+					          
+					          var styleMap = new OpenLayers.StyleMap({
+					              strokeColor: "blue",
+					              strokeOpacity: 0.5,
+					              strokeWidth: 6,
+					              pointRadius: 18,
+					              //graphicZIndex : 99,
+					              fillColor: "blue",
+					              fillOpacity: 0.25
+					          });
+					          layer = new OpenLayers.Layer.Vector("Polygon", {
+					              strategies: [new OpenLayers.Strategy.Fixed()],
+					              isBaseLayer       : true,
+					              protocol: new OpenLayers.Protocol.HTTP({
+					                  url: data_url,
+					                  format: new OpenLayers.Format.OSM()
+					              }),
+					              styleMap: styleMap,
+					              projection: new OpenLayers.Projection("EPSG:4326")
+					          });
+					        layer.redraw(true);
+					        //this.theMap.addLayer(layer);
+					        alert(layer.features);
+							
+							
+							
+							
 						};
 						options[0].onmouseover = function(e) {
 							//click on start point
@@ -445,6 +487,7 @@ var Map = ( function() {"use strict";
 								pos : displayPos,
 								type : Waypoint.type.VIA
 							});
+							alert(layer.features);
 						};
 						options[1].onmouseover = function(e) {
 							//click on start point
@@ -624,6 +667,7 @@ var Map = ( function() {"use strict";
 			//when zooming or moving the map -> close the context menu
 			this.theMap.events.register("zoomend", this.map, closeContextMenu);
 			this.theMap.events.register("movestart", this.map, closeContextMenu);
+			
 		}
 
 		/* *********************************************************************
