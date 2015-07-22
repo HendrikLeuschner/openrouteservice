@@ -444,31 +444,11 @@ var Map = ( function() {"use strict";
 								
 							});
 							
-							var data_url = "http://overpass-api.de/api/interpreter?data=[out:xml];node[name=%22Gielgen%22][place=suburb];out skel;";
+					          this.theMap.addLayers([
+					                         make_layer("http://overpass-api.de/api/interpreter?data=[out:xml];node[name=%22Gielgen%22][place=suburb];out skel;", "orange")
+					                     ]);
 					          
-					          var styleMap = new OpenLayers.StyleMap({
-					              strokeColor: "blue",
-					              strokeOpacity: 0.5,
-					              strokeWidth: 6,
-					              pointRadius: 18,
-					              //graphicZIndex : 99,
-					              fillColor: "blue",
-					              fillOpacity: 0.25
-					          });
-					          layer = new OpenLayers.Layer.Vector("Polygon", {
-					              strategies: [new OpenLayers.Strategy.Fixed()],
-					              isBaseLayer       : true,
-					              protocol: new OpenLayers.Protocol.HTTP({
-					                  url: data_url,
-					                  format: new OpenLayers.Format.OSM()
-					              }),
-					              styleMap: styleMap,
-					              projection: new OpenLayers.Projection("EPSG:4326")
-					          });
-					        layer.redraw(true);
-					        //this.theMap.addLayer(layer);
-					        alert(layer.features);
-							
+					        //this.theMap.addLayer(layer);						
 							
 							
 							
